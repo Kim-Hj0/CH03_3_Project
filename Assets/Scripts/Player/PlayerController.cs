@@ -31,6 +31,12 @@ public class PlayerController : MonoBehaviour
         OnSlideEvent?.Invoke();
     }
 
-    
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            CallJumpEvent();
+        }
+    }
 
 }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovmentController : MonoBehaviour   //이동 관련된
 {
@@ -10,6 +10,10 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
 
     private Vector2 _movementDirection = Vector2.zero;
     private Rigidbody2D _rigidbody;
+
+    //점프
+    private bool _isGrounded;
+    private float jumpForce = 10f;
 
 
     private void Awake()
@@ -21,14 +25,41 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
  
     private void Start()
     {
-        _controller.OnMoveEvent += Move;       
-        //_controller.OnJumpEvent += Jump;
+        _controller.OnMoveEvent += Move;
+        _controller.OnJumpEvent += Jump;    //점프
     }
+
+    private void Update()   //점프
+    {
+        if (_isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            Jump();
+        }
+    }
+
 
     private void FixedUpdate()
     {
         ApplyMovment(_movementDirection);
     }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)  //점프
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)   //점프
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = false;
+        }
+    }
+
 
     private void Move(Vector2 direction)
     {
@@ -42,49 +73,12 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     }
 
 
-    //private void Update()
-    //{
-    //    //점프
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //        rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-
-    //        anim.SetBool("IsJumping", true);
-
-    //    //Stop Speed
-    //    if(Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        rigid.velocity = new Vector2(rigid.velocity.normalized.x*0.5f,rigid.velocity.y);
-    //    }
-    //}
-
-    //private void Jump()
-    //{
-    //    //스페이스키를 누르면 점프
-    //    if (Input.GetKeyDown(KeyCode.Space)) 
-    //    {
-    //        //바닥에 있으면 점프를 실행
-    //        if (!IsJump)
-    //        {
-    //            IsJump = true;
-    //            _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode2D.Impulse);
-    //        }
-
-    //        //공중에 떠있으면 점프 못하도록.
-    //        else 
-    //        {
-    //            return;
-    //        }
-    //    }
-    //}
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    //바닥에 닿으면
-    //    if (collision.gameObject.CompareTag("Ground"))
-    //    {
-    //        IsJump = false;
-    //    }
-    //}
-
+    private void Jump() //점프
+    {
+        if (_isGrounded)
+        {
+            _rigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
 
 }
