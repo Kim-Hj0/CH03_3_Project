@@ -11,21 +11,11 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     private Vector2 _movementDirection = Vector2.zero;
     private Rigidbody2D _rigidbody;
 
-    //점프
-    public float maxSpeed;
-    public float jumpPower;
-    Rigidbody2D rigid;
-    SpriteRenderer spriteRenderer;
-    Animator anim;
 
     private void Awake()
     {
         _controller = GetComponent<PlayerController>();
-
-        //점프
-        rigid = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
  
@@ -35,20 +25,37 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
         //_controller.OnJumpEvent += Jump;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        //점프
-        if (Input.GetKeyDown(KeyCode.Space))
-            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-
-            anim.SetBool("IsJumping", true);
-
-        //Stop Speed
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            rigid.velocity = new Vector2(rigid.velocity.normalized.x*0.5f,rigid.velocity.y);
-        }
+        ApplyMovment(_movementDirection);
     }
+
+    private void Move(Vector2 direction)
+    {
+        _movementDirection = direction;
+    }
+
+    private void ApplyMovment(Vector2 direction)
+    {
+        direction = direction * 5;
+        _rigidbody.velocity = direction;
+    }
+
+
+    //private void Update()
+    //{
+    //    //점프
+    //    if (Input.GetKeyDown(KeyCode.Space))
+    //        rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+
+    //        anim.SetBool("IsJumping", true);
+
+    //    //Stop Speed
+    //    if(Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        rigid.velocity = new Vector2(rigid.velocity.normalized.x*0.5f,rigid.velocity.y);
+    //    }
+    //}
 
     //private void Jump()
     //{
@@ -79,20 +86,5 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     //    }
     //}
 
-    
-    private void FixedUpdate()
-    {
-        ApplyMovment(_movementDirection);
-    }
 
-    private void Move(Vector2 direction)
-    {
-        _movementDirection = direction;
-    }
-
-    private void ApplyMovment(Vector2 direction)
-    {
-        direction = direction * 5;
-        _rigidbody.velocity = direction;
-    }
 }
