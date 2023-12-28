@@ -11,9 +11,17 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     private Vector2 _movementDirection = Vector2.zero;
     private Rigidbody2D _rigidbody;
 
+
+
     //점프
     private bool _isGrounded;
     private float jumpForce = 10f;
+
+    public float jumpPower = 15f;
+    private Animator anim;
+    Vector3 movement;
+    private int direction = 1;
+    bool isJumping = false;
 
 
     private void Awake()
@@ -26,16 +34,42 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     private void Start()
     {
         _controller.OnMoveEvent += Move;
-        _controller.OnJumpEvent += Jump;    //점프
+        //_controller.OnJumpEvent += Jump;    //점프
     }
 
-    private void Update()   //점프
+    //private void Update()   //점프
+    //{
+    //    if (_isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
+    //    {
+    //        Jump();
+    //    }
+    //}
+
+
+
+    void Jump()
     {
-        if (_isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
+        if ((Input.GetButtonDown("Jump") || Input.GetAxisRaw("Vertical") > 0)
+        && !anim.GetBool("isJump"))
         {
-            Jump();
+            isJumping = true;
+            anim.SetBool("isJump", true);
         }
+        if (!isJumping)
+        {
+            return;
+        }
+
+        _rigidbody.velocity = Vector2.zero;
+
+        Vector2 jumpVelocity = new Vector2(0, jumpPower);
+        _rigidbody.AddForce(jumpVelocity, ForceMode2D.Impulse);
+
+        isJumping = false;
     }
+
+
+
 
 
     private void FixedUpdate()
@@ -73,12 +107,14 @@ public class PlayerMovmentController : MonoBehaviour   //이동 관련된
     }
 
 
-    private void Jump() //점프
-    {
-        if (_isGrounded)
-        {
-            _rigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
-    }
+    //private void Jump() //점프
+    //{
+    //    if (_isGrounded)
+    //    {
+    //        _rigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+    //    }
+    //}
+
+  
 
 }
